@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>PrimeVue + CDN</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      #app {
+        font-family: "Roboto", sans-serif;
+        font-weight: 500;
+        font-style: normal;
+      }
+
+      .question {
+        font-size: 18px;
+        font-weight: 500;
+        margin-top: 10px;
+        margin-bottom: 20px;
+      }
+
+      .player-name {
+        font-size: 14px;
+        font-weight: 400;
+      }
+
+      .player-item {
+        margin: 10px 0;
+        display: flex;
+        gap: 20px;
+      }
+
+      .result {
+        width: 300px;
+        font-size: 30px;
+        font-weight: 400;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #fff;
+        padding: 5px 0;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+    <script src="https://unpkg.com/@primevue/themes/umd/aura.min.js"></script>
+    <script src="https://unpkg.com/@primevue/themes/umd/lara.min.js"></script>
+    <script src="https://unpkg.com/@primevue/themes/umd/nora.min.js"></script>
+
+    <div id="app">
+      <p-stepper>
+        <p-step-item v-for="(item, index) in questions" :value="item.id">
+          <p-step>Питання №{{ item.id }}</p-step>
+          <p-step-panel v-slot="{ activateCallback }">
+            <div class="question">{{ item.question }}</div>
+
+            <div style="display: flex; gap: 20px">
+              <div style="width: 20px; height: 20px; text-align: center">A</div>
+              <div style="width: 20px; height: 20px; text-align: center">B</div>
+            </div>
+
+            <div v-for="player in players" class="player-item">
+              <div>
+                <p-checkbox v-model="player.answers[item.id][0]" binary />
+              </div>
+
+              <div>
+                <p-checkbox v-model="player.answers[item.id][1]" binary />
+              </div>
+
+              <span class="player-name ml-2">{{ player.name }}</span>
+            </div>
+          </p-step-panel>
+        </p-step-item>
+      </p-stepper>
+
+      <div v-if="results.length">
+        <h2>Результати</h2>
+        <div v-for="(result, index) in results">
+          <div class="result">
+            <span>{{ result.name }}</span>
+            <span style="font-weight: 600">{{ result.score }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin: 20px auto">
+        <p-button label="Підрахувати" @click="resultHandler" />
+      </div>
+    </div>
+
+    <script>
+      const { createApp, ref } = Vue;
+
+      const app = createApp({
+        setup() {
+          const initialAnswers = {
+            1: [false, false],
+            2: [false, false],
+            3: [false, false],
+            4: [false, false],
+            5: [false, false],
+            6: [false, false],
+            7: [false, false],
+            8: [false, false],
+            9: [false, false],
+            10: [false, false],
+            11: [false, false],
+            12: [false, false],
+            13: [false, false],
+            14: [false, false],
+            15: [false, false],
+            16: [false, false],
+            17: [false, false],
+            18: [false, false],
+            19: [false, false],
+            20: [false, false],
+            21: [false, false],
+            22: [false, false],
+            23: [false, false],
+            24: [false, false],
+          };
+
+          const questions = [
+            {
+              id: 1,
+              question: "Хто з молодят більше часу проводить перед дзеркалом?",
+              answers: [true, true],
+              isMultiple: true,
+            },
+            {
+              id: 2,
+              question: "Хто з нас частіше купує одяг?",
+              answers: [true, false],
+              isMultiple: false,
+            },
+            {
+              id: 3,
+              question: "Хто краще готує сніданки?",
+              answers: [false, true],
+              isMultiple: false,
+            },
+            {
+              id: 4,
+              question: "Хто з молодят має більшу колекцію взуття?",
+              answers: [true, false],
+              isMultiple: false,
+            },
+            {
+              id: 5,
+              question: "Хто першим прокидається вранці?",
+              answers: [false, true],
+              isMultiple: false,
+            },
+            {
+              id: 6,
+              question: "Хто частіше запізнюється?",
+              answers: [true, true],
+              isMultiple: true,
+            },
+            {
+              id: 7,
+              question: "Хто першим почав планувати весілля?",
+              answers: [true, false],
+              isMultiple: false,
+            },
+            {
+              id: 8,
+              question: "Хто з молодят більше спить?",
+              answers: [true, false],
+              isMultiple: false,
+            },
+            {
+              id: 9,
+              question: "Хто частіше купує непотрібні речі?",
+              answers: [true, false],
+              isMultiple: false,
+            },
+            {
+              id: 10,
+              question: "Хто краще орієнтується на місцевості без карти?",
+              answers: [false, true],
+              isMultiple: false,
+            },
+            {
+              id: 11,
+              question: "Хто з молодят частіше забуває вимикати світло?",
+              answers: [true, false],
+              isMultiple: false,
+            },
+            {
+              id: 12,
+              question: "Хто більше любить дивитися спортивні трансляції?",
+              answers: [false, true],
+              isMultiple: false,
+            },
+            {
+              id: 13,
+              question: "Хто частіше вигадує причини, щоб залишитися вдома?",
+              answers: [true, false],
+              isMultiple: false,
+            },
+            {
+              id: 14,
+              question: "Хто з молодят частіше їсть під час перегляду фільмів?",
+              answers: [false, true],
+              isMultiple: false,
+            },
+            {
+              id: 15,
+              question: "Хто першим заговорив про спільне майбутнє?",
+              answers: [false, true],
+              isMultiple: false,
+            },
+            {
+              id: 16,
+              question:
+                "Хто з молодят частіше вигадує кумедні прізвиська для іншого?",
+              answers: [true, true],
+              isMultiple: true,
+            },
+            {
+              id: 17,
+              question: "Хто частіше обирає фільми для спільного перегляду?",
+              answers: [false, true],
+              isMultiple: false,
+            },
+            {
+              id: 18,
+              question: "Хто з молодят частіше купує нові гаджети?",
+              answers: [false, true],
+              isMultiple: false,
+            },
+            {
+              id: 19,
+              question: "Хто першим запропонував спільне проживання?",
+              answers: [false, true],
+              isMultiple: false,
+            },
+            {
+              id: 20,
+              question: "Хто з молодят більше любить солодке?",
+              answers: [true, false],
+              isMultiple: false,
+            },
+            {
+              id: 21,
+              question: "Хто з молодят педантичніший?",
+              answers: [false, true],
+              isMultiple: false,
+            },
+            {
+              id: 22,
+              question: "Хто швидше засинає під час фільму?",
+              answers: [true, false],
+              isMultiple: false,
+            },
+            {
+              id: 23,
+              question: "Хто з ранку більш роздратований?",
+              answers: [true, false],
+              isMultiple: false,
+            },
+            {
+              id: 24,
+              question: "Хто перший сказав 'Я тебе кохаю'?",
+              answers: [false, true],
+              isMultiple: false,
+            },
+          ];
+
+          const players = ref([
+            {
+              id: 1,
+              name: "Ірина",
+              answers: JSON.parse(JSON.stringify(initialAnswers)),
+            },
+            {
+              id: 2,
+              name: "Олена",
+              answers: JSON.parse(JSON.stringify(initialAnswers)),
+            },
+            {
+              id: 3,
+              name: "Наталія (м)",
+              answers: JSON.parse(JSON.stringify(initialAnswers)),
+            },
+            {
+              id: 4,
+              name: "Єгор",
+              answers: JSON.parse(JSON.stringify(initialAnswers)),
+            },
+            {
+              id: 5,
+              name: "Андрій",
+              answers: JSON.parse(JSON.stringify(initialAnswers)),
+            },
+            {
+              id: 6,
+              name: "Наталія (т)",
+              answers: JSON.parse(JSON.stringify(initialAnswers)),
+            },
+            {
+              id: 7,
+              name: "Максим",
+              answers: JSON.parse(JSON.stringify(initialAnswers)),
+            },
+          ]);
+
+          const results = ref([]);
+
+          const resultHandler = () => {
+            results.value = players.value.map((el) => {
+              const score = questions.reduce((acc, question) => {
+                const playerAnswers = el.answers[question.id];
+                const correctAnswers = question.answers;
+
+                if (question.isMultiple) {
+                  const firstResult =
+                    playerAnswers[0] === correctAnswers[0] ? 1 : 0;
+                  const secondResult =
+                    playerAnswers[1] === correctAnswers[1] ? 1 : 0;
+
+                  return acc + firstResult + secondResult;
+                } else {
+                  const isPlayerGivenMultipleAnswers =
+                    playerAnswers[0] && playerAnswers[1];
+
+                  if (isPlayerGivenMultipleAnswers) {
+                    return acc + 0.5;
+                  } else {
+                    const firstResult = playerAnswers[0] === correctAnswers[0];
+                    const secondResult = playerAnswers[1] === correctAnswers[1];
+
+                    return acc + (firstResult && secondResult ? 1 : 0);
+                  }
+                }
+              }, 0);
+
+              return { name: el.name, score };
+            }).sort((a, b) => b.score - a.score);
+          };
+
+          return {
+            questions,
+            players,
+            results,
+            resultHandler,
+          };
+        },
+      });
+
+      app.use(PrimeVue.Config, {
+        theme: {
+          preset: PrimeVue.Themes.Nora,
+        },
+      });
+
+      app.component("p-stepper", PrimeVue.Stepper);
+      app.component("p-step-list", PrimeVue.StepList);
+      app.component("p-step-panels", PrimeVue.StepPanels);
+      app.component("p-step-item", PrimeVue.StepItem);
+      app.component("p-step", PrimeVue.Step);
+      app.component("p-step-panel", PrimeVue.StepPanel);
+      app.component("p-button", PrimeVue.Button);
+      app.component("p-checkbox", PrimeVue.Checkbox);
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>
