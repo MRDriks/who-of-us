@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Хто з нас</title>
+    <title>Хто з нас?</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link
@@ -53,6 +53,8 @@
     <script src="https://unpkg.com/@primevue/themes/umd/nora.min.js"></script>
 
     <div id="app">
+      <h1 style="text-align: center;">Хто з нас?</h1>
+
       <p-stepper>
         <p-step-item v-for="(item, index) in questions" :value="item.id">
           <p-step>Питання №{{ item.id }}</p-step>
